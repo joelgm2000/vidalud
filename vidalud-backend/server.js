@@ -3,7 +3,10 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors({
-  origin: ['http://localhost:4200', 'https://vidalud-frontend.vercel.app']
+  origin: ['http://localhost:4200', 
+    'https://vidalud-frontend.vercel.app',
+    'https://vidalud.com',
+    'https://www.vidalud.com']
 }));
 app.use(express.json());
 

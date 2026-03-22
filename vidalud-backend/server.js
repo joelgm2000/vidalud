@@ -2,7 +2,9 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
-app.use(cors({ origin: 'http://localhost:4200' }));
+app.use(cors({
+  origin: ['http://localhost:4200', 'https://vidalud-frontend.vercel.app']
+}));
 app.use(express.json());
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkmX4yzLaRd7r5Evj-Hu0nFdpnvN7a_x4whpm40cX1_fObvu5-IpNktn5r9l3cphk/exec';

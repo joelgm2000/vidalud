@@ -13,11 +13,19 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxkmX4yzLaRd7r5Evj-Hu0nFdpnvN7a_x4whpm40cX1_fObvu5-IpNktn5r9l3cphk/exec';
+// === CONFIGURACIÓN (variables de entorno, nunca en el código) ===
+// En Render: Dashboard → servicio → Environment. En local: archivo .env (ver .env.example)
+const GOOGLE_SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
+const META_PIXEL_ID     = process.env.META_PIXEL_ID;
+const META_ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
 
-// === CONFIGURACIÓN DE META (FACEBOOK) ===
-const META_PIXEL_ID = '4032498167050111';
-const META_ACCESS_TOKEN = 'EAAM5VvxvLBEBRNwly2gzyTesxoqikATZA6smEkkIeWNiVJ51f7yGT1kXP5oQDpd9cZBaIoxoZAVZBZAePa1aQNN8aAZBFqIBfr33SIi16PMXg7E8v3CKR4OHX49xbJudbpw6GbjEZBKpv9LqGOGiOpZChHAQBuly67fB3kgZBn2UHZBpvRIkXJXS9VXPfBoZBkS5PIQuAZDZD';
+if (!GOOGLE_SCRIPT_URL) {
+    console.error('❌ Falta la variable de entorno GOOGLE_SCRIPT_URL. El servidor no puede guardar pedidos.');
+    process.exit(1);
+}
+if (!META_PIXEL_ID || !META_ACCESS_TOKEN) {
+    console.warn('⚠️ Faltan META_PIXEL_ID o META_ACCESS_TOKEN: los pedidos se guardan, pero no se envían a Meta.');
+}
 
 // Función obligatoria de Facebook para encriptar correos y teléfonos (SHA256)
 const hashData = (data) => {
@@ -64,7 +72,7 @@ app.post('/api/orders', async (req, res) => {
         console.log('✅ Pedido guardado en Excel. ID:', data.orderId);
 
         // === 🚀 NUEVO: ENVIAR COMPRA A FACEBOOK (CONVERSIONS API) ===
-        try {
+        if (META_PIXEL_ID && META_ACCESS_TOKEN) try {
             // Facebook prefiere los números con código de país. Si no tiene el 57 de Colombia, se lo ponemos.
             let phoneFormatted = order.phone.toString().startsWith('57') ? order.phone : '57' + order.phone;
 

@@ -48,6 +48,7 @@ app.post('/api/orders', async (req, res) => {
             address:    order.address    || '',
             notes:      order.notes      || '',
             productId:  order.productId  || '',
+            productName: order.productName || '',  // opción elegida (para los correos)
             quantity:   order.quantity   || 1,
             total:      order.total      || 0,
         };
